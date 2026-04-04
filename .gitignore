@@ -1,0 +1,13 @@
+RetroMCP-Java-GUI.jar
+options.cfg
+*.class
+*.iml
+res/
+backup/
+util/
+conf/
+libraries/
+minecraft/bin
+.idea/
+.settings/
+.vscode/
