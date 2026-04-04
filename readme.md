@@ -1,2 +1,1 @@
-Замените исходный путь: C:\Files\Projects\rmcp\enchanted-classic на ваш путь
-Это необходимо сделать в файлах compiler-client.cmd, compiler-server.cmd, make-backup.cmd, .classpath
+Замените исходный путь: C:\Files\Projects\rmcp\enchanted-classic на ваш путь.  Это необходимо сделать в файлах: compiler-client.cmd, compiler-server.cmd, make-backup.cmd, .classpath
