@@ -1,0 +1,3 @@
+title Compilation Client...
+cd C:\Files\Projects\rmcp\enchanted-classic\minecraft\bin
+jar cvf C:\Files\Projects\rmcp\enchanted-classic\build\enchanted_classic.jar *

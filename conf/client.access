@@ -1,0 +1,5 @@
+PUBLIC com/mojang/minecraft/player/Player$1 update ()V
+PUBLIC com/mojang/minecraft/mob/Sheep aiStep ()V
+PUBLIC com/mojang/minecraft/mob/Sheep$1 update ()V
+PUBLIC com/mojang/minecraft/mob/ai/BasicAttackAI update ()V
+PUBLIC com/mojang/minecraft/mob/Creeper$1 attack (Lcom/mojang/minecraft/Entity;)Z

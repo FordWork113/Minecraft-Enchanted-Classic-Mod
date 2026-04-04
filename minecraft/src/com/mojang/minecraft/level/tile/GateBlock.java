@@ -1,0 +1,4 @@
+package com.mojang.minecraft.level.tile;
+
+public class GateBlock {
+}

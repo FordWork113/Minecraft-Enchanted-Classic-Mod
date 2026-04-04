@@ -1,0 +1,121 @@
+package com.mojang.minecraft;
+
+import com.mojang.minecraft.item.Items;
+import com.mojang.minecraft.level.tile.Block;
+import java.util.ArrayList;
+import java.util.List;
+
+public final class SessionData {
+   public static List allowedBlocks;
+   public String username;
+   public String sessionId;
+   public String mppass;
+   public boolean haspaid;
+   private Minecraft mc;
+
+   public SessionData(String var1, String var2) {
+      this.username = var1;
+      this.sessionId = var2;
+   }
+
+   static {
+      (allowedBlocks = new ArrayList()).add(Block.STONE);
+      allowedBlocks.add(Block.COBBLESTONE);
+      allowedBlocks.add(Block.BRICK);
+      allowedBlocks.add(Block.DIRT);
+      allowedBlocks.add(Block.WOOD);
+      allowedBlocks.add(Block.LOG);
+      allowedBlocks.add(Block.LEAVES);
+      allowedBlocks.add(Block.GLASS);
+      allowedBlocks.add(Block.SLAB);
+      allowedBlocks.add(Block.MOSSY_COBBLESTONE);
+      allowedBlocks.add(Block.SAPLING);
+      allowedBlocks.add(Block.DANDELION);
+      allowedBlocks.add(Block.ROSE);
+      allowedBlocks.add(Block.BROWN_MUSHROOM);
+      allowedBlocks.add(Block.RED_MUSHROOM);
+      allowedBlocks.add(Block.SAND);
+      allowedBlocks.add(Block.GRAVEL);
+      allowedBlocks.add(Block.SPONGE);
+      allowedBlocks.add(Block.RED_WOOL);
+      allowedBlocks.add(Block.ORANGE_WOOL);
+      allowedBlocks.add(Block.YELLOW_WOOL);
+      allowedBlocks.add(Block.LIME_WOOL);
+      allowedBlocks.add(Block.GREEN_WOOL);
+      allowedBlocks.add(Block.AQUA_GREEN_WOOL);
+      allowedBlocks.add(Block.CYAN_WOOL);
+      allowedBlocks.add(Block.BLUE_WOOL);
+      allowedBlocks.add(Block.PURPLE_WOOL);
+      allowedBlocks.add(Block.INDIGO_WOOL);
+      allowedBlocks.add(Block.VIOLET_WOOL);
+      allowedBlocks.add(Block.MAGENTA_WOOL);
+      allowedBlocks.add(Block.RED_PINK_WOOL);
+      allowedBlocks.add(Block.DARKGRAY_WOOL);
+      allowedBlocks.add(Block.GRAY_WOOL);
+      allowedBlocks.add(Block.WHITE_WOOL);
+      allowedBlocks.add(Block.COAL_ORE);
+      allowedBlocks.add(Block.IRON_ORE);
+      allowedBlocks.add(Block.GOLD_ORE);
+      allowedBlocks.add(Block.IRON_BLOCK);
+      allowedBlocks.add(Block.GOLD_BLOCK);
+      allowedBlocks.add(Block.BOOKSHELF);
+      allowedBlocks.add(Block.TNT);
+      allowedBlocks.add(Block.OBSIDIAN);
+      allowedBlocks.add(Block.GRASS);
+      allowedBlocks.add(Block.BEDROCK);
+      allowedBlocks.add(Block.STATIONARY_LAVA);
+      allowedBlocks.add(Block.STATIONARY_WATER);
+      allowedBlocks.add(Block.DIAMOND_ORE);
+      allowedBlocks.add(Block.RUBY_ORE);
+      allowedBlocks.add(Block.DIAMOND_BLOCK);
+      allowedBlocks.add(Block.RUBY_BLOCK);
+      allowedBlocks.add(Block.BLACK_WOOL);
+      allowedBlocks.add(Block.PINK_WOOL);
+      allowedBlocks.add(Block.DARK_GREEN_WOOL);
+      allowedBlocks.add(Block.BROWN_WOOL);
+      allowedBlocks.add(Block.DARK_BLUE_WOOL);
+      allowedBlocks.add(Block.TURQUOISE_WOOL);
+      allowedBlocks.add(Block.BIRCH_LOG);
+      allowedBlocks.add(Block.BIRCH_WOOD);
+      allowedBlocks.add(Block.SPRUCE_LOG);
+      allowedBlocks.add(Block.SPRUCE_WOOD);
+      allowedBlocks.add(Block.CLAY);
+      allowedBlocks.add(Block.SANDSTONE);
+      allowedBlocks.add(Block.DOUBLE_SLAB);
+      allowedBlocks.add(Block.LAVA_SPONGE);
+      allowedBlocks.add(Block.COBWEB);
+      allowedBlocks.add(Block.CRYING_OBSIDIAN);
+      allowedBlocks.add(Block.SLIME_BLOCK);
+      allowedBlocks.add(Block.SNOW_GRASS);
+      allowedBlocks.add(Block.SNOW_BLOCK);
+      allowedBlocks.add(Block.ICE);
+      allowedBlocks.add(Block.MAGMA);
+      allowedBlocks.add(Block.CACTUS);
+      allowedBlocks.add(Block.SPRUCE_LEAVES);
+      allowedBlocks.add(Block.REDBERRY_LEAVES);
+      allowedBlocks.add(Block.BLACKBERRY_LEAVES);
+      allowedBlocks.add(Block.SNOW_LEAVES);
+      allowedBlocks.add(Block.SNOW_SPRUCE_LEAVES);
+      allowedBlocks.add(Block.BIRCH_SAPLING);
+      allowedBlocks.add(Block.SPRUCE_SAPLING);
+      allowedBlocks.add(Block.REDBERRY_SAPLING);
+      allowedBlocks.add(Block.BLACKBERRY_SAPLING);
+      allowedBlocks.add(Block.DEAD_BUSH);
+      allowedBlocks.add(Block.BUSH);
+      allowedBlocks.add(Block.BLUE_ROSE);
+      allowedBlocks.add(Block.DANGELION);
+      allowedBlocks.add(Block.REEDS);
+      allowedBlocks.add(Block.STONEBRICK);
+      allowedBlocks.add(Block.MOSSY_STONEBRICK);
+      allowedBlocks.add(Block.CRACKED_STONEBRICK);
+      allowedBlocks.add(Block.WOOD_SLAB);
+      allowedBlocks.add(Block.DIRT_SLAB);
+      allowedBlocks.add(Block.COBBLESTONE_SLAB);
+      allowedBlocks.add(Block.MOSSY_COBBLESTONE_SLAB);
+      allowedBlocks.add(Block.STONE_SLAB);
+      allowedBlocks.add(Block.BRICK_SLAB);
+      allowedBlocks.add(Block.STONEBRICK_SLAB);
+      allowedBlocks.add(Block.SANDSTONE_SLAB);
+   }
+
+}

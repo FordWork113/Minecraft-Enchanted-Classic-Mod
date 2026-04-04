@@ -1,0 +1,88 @@
+--- com/mojang/minecraft/BackgroundDownloader.java
++++ com/mojang/minecraft/BackgroundDownloader.java
+@@ -1,11 +1,16 @@
+ package com.mojang.minecraft;
+ 
++import java.io.BufferedReader;
+ import java.io.DataInputStream;
+ import java.io.DataOutputStream;
+ import java.io.File;
+ import java.io.FileOutputStream;
+ import java.io.IOException;
++import java.io.InputStreamReader;
+ import java.net.URL;
++import java.util.ArrayList;
++
++import com.mojang.minecraft.sound.SoundEngine;
+ 
+ public final class BackgroundDownloader extends Thread {
+ 	private File resourcesFolder;
+@@ -23,7 +28,67 @@
+ 	}
+ 
+ 	public final void run() {
+-		// $FF: Couldn't be decompiled
++		try {
++			ArrayList var1 = new ArrayList();
++			URL var2 = new URL("http://www.minecraft.net/resources/");
++			BufferedReader var3 = new BufferedReader(new InputStreamReader(var2.openStream()));
++			String var4 = null;
++
++			while(true) {
++				var4 = var3.readLine();
++				if(var4 == null) {
++					var3.close();
++
++					for(int var11 = 0; var11 < var1.size(); ++var11) {
++						String var6 = (String)var1.get(var11);
++						URL var5 = var2;
++						BackgroundDownloader var12 = this;
++
++						try {
++							label58: {
++								String[] var16 = var6.split(",");
++								String var7 = var16[0];
++								int var8 = Integer.parseInt(var16[1]);
++								Long.parseLong(var16[2]);
++								File var17 = new File(var12.resourcesFolder, var7);
++								String var19;
++								if(!var17.exists() || var17.length() != (long)var8) {
++									var17.getParentFile().mkdirs();
++									var19 = var7.replaceAll(" ", "%20");
++									var12.downloadResource(new URL(var5, var19), var17);
++									if(var12.closing) {
++										break label58;
++									}
++								}
++
++								Minecraft var13 = var12.minecraft;
++								int var18 = var7.indexOf("/");
++								var19 = var7.substring(0, var18);
++								String var14 = var7.substring(var18 + 1);
++								if(var19.equalsIgnoreCase("sound")) {
++									SoundEngine var15 = var13.soundEngine;
++									var15.registerSound(var17, var14);
++								} else if(var19.equalsIgnoreCase("music")) {
++									var13.soundEngine.registerMusic(var14, var17);
++								}
++							}
++						} catch (Exception var9) {
++							var9.printStackTrace();
++						}
++
++						if(this.closing) {
++							return;
++						}
++					}
++
++					return;
++				}
++
++				var1.add(var4);
++			}
++		} catch (IOException var10) {
++			var10.printStackTrace();
++		}
+ 	}
+ 
+ 	private void downloadResource(URL var1, File var2) throws IOException {
