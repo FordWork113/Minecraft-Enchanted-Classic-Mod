@@ -81,7 +81,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 public final class Minecraft implements Runnable {
-   public final String VER = "v1.10";
+   public final String VER = "v1.11";
    public final String TAG = "";
    public final String MOD_NAME = "Enchanted Classic";
    public final String WINDOW_TITLE = "Minecraft";
@@ -339,22 +339,23 @@ public final class Minecraft implements Runnable {
          switch(OperatingSystemLookup.lookup[((var4 = System.getProperty("os.name").toLowerCase()).contains("win") ? Minecraft$OS.windows : (var4.contains("mac") ? Minecraft$OS.macos : (var4.contains("solaris") ? Minecraft$OS.solaris : (var4.contains("sunos") ? Minecraft$OS.solaris : (var4.contains("linux") ? Minecraft$OS.linux : (var4.contains("unix") ? Minecraft$OS.linux : Minecraft$OS.unknown)))))).ordinal()]) {
          case 1:
          case 2:
-            this.minecraftDir = new File(var2, '.' + var3 + '/');
+            this.minecraftDir = new File(var2, var3.startsWith("/") ? var3.substring(1) : var3);
             break;
          case 3:
             String var5;
             if ((var5 = System.getenv("APPDATA")) != null) {
-               this.minecraftDir = new File(var5, "." + var3 + '/');
+               this.minecraftDir = new File(var5, var3.startsWith("/") ? var3.substring(1) : var3);
             } else {
-               this.minecraftDir = new File(var2, '.' + var3 + '/');
+               this.minecraftDir = new File(var2, var3.startsWith("/") ? var3.substring(1) : var3);
             }
             break;
          case 4:
             this.minecraftDir = new File(var2, "Library/Application Support/" + var3);
             break;
          default:
-            this.minecraftDir = new File(var2, var3 + '/');
+            this.minecraftDir = new File(var2, var3.startsWith("/") ? var3.substring(1) : var3);
          }
+         
 
          if (!this.minecraftDir.exists() && !this.minecraftDir.mkdirs()) {
             throw new RuntimeException("The working directory could not be created: " + this.minecraftDir);
@@ -507,8 +508,8 @@ public final class Minecraft implements Runnable {
                   GL11.glEnable(3553);
                   if (!this.online) {
 
-                     if(this.level != null) {
-                     this.gamemode.applyCracks(this.timer.delta);
+                     if(this.level != null && !this.editMode) {
+                        this.gamemode.applyCracks(this.timer.delta);
                      }
 
                      float var109 = this.timer.delta;
@@ -898,7 +899,7 @@ public final class Minecraft implements Runnable {
                                     GL11.glDepthMask(true);
                                     GL11.glPopMatrix();
                                  } else if(this.settings.handleClick) {              
-                                	this.levelRenderer.renderHit(this.player, var67, this.editMode ? 1 : 0, var9);
+                                	   this.levelRenderer.renderHit(this.player, var67, this.editMode ? 1 : 0, var9);
                                     this.levelRenderer.renderHitOutline(var67, this.editMode ? 1 : 0);  
                                  }
 
@@ -1286,12 +1287,12 @@ public final class Minecraft implements Runnable {
 
             Block var8 = Block.blocks[this.level.getTile(var12, var6, var7)];
             if (var1 == 0) {
-               if (var8 != Block.BEDROCK || this.player.userType >= 100) {
+               if (var8 != Block.BEDROCK || this.player.userType >= 100 && !this.editMode) {
                   this.gamemode.hitBlock(var12, var6, var7);
                   return;
                }
 
-               if (this.gamemode.isCreative() && var8 == Block.BEDROCK && this.networkManager == null) {
+               if (this.gamemode.isCreative() && var8 == Block.BEDROCK && this.networkManager == null && !this.editMode) {
                   this.gamemode.hitBlock(var12, var6, var7);
                   return;
                }
@@ -1642,7 +1643,7 @@ public final class Minecraft implements Runnable {
 
                            boolean var42 = currentScreen == null && Mouse.isButtonDown(0) && this.hasMouse;
                            boolean var43 = false;
-                           if (!this.gamemode.instantBreak && this.blockHitTime <= 0) {
+                           if (!this.gamemode.instantBreak && this.blockHitTime <= 0 && !this.editMode) {
                               if (var42 && this.selected != null && this.selected.entityPos == 0) {
                                  var8 = this.selected.x;
                                  var5 = this.selected.y;
@@ -1736,24 +1737,18 @@ public final class Minecraft implements Runnable {
                            this.setCurrentScreen(new ChatInputScreen());
                         }
 
-                        if (this.gamemode.isSurvival() && Keyboard.getEventKey() == this.settings.dropKey.key) {
+                        if (this.player.inventory.getSelected() != null && this.gamemode.isSurvival() && Keyboard.getEventKey() == this.settings.dropKey.key) {
                            ItemRenderer var2;
                            var2 = this.renderer.itemRenderer;
-                           this.renderer.itemRenderer.pos = 0.0F;
+                           this.renderer.itemRenderer.pos = 0.0F;                          
                            this.player.drop(this.player.inventory.decrStackSize(this.player.inventory.selected, 1));
                         }
 
                         if (this.devMode) {
                         	
-                            if (Keyboard.getEventKey() == 65) {
-                                this.renderer.grabIsometricScreenshot();
-                             }
-                            
-                        	if(Keyboard.getEventKey() == 15 && this.gamemode.isSurvival() && this.player.arrows > 0) {
-                                this.level.addEntity(new Arrow(this.level, this.player, this.player.x, this.player.y, this.player.z, this.player.yRot, this.player.xRot, 1.2F));
-                                --this.player.arrows;
-                                this.level.playSound("random.bow", this.player.x, this.player.y, this.player.z, 1.0F, 1.0F / (this.level.random.nextFloat() * 0.4F + 0.8F));
-                            }
+                           if (Keyboard.getEventKey() == 65) {
+                              this.renderer.grabIsometricScreenshot();
+                           }           
                         	
                            if (Keyboard.getEventKey() == 67) {
                               this.level.addEntity(new Slime(this.level, this.player.x, this.player.y, this.player.z));
@@ -1777,10 +1772,10 @@ public final class Minecraft implements Runnable {
                            
                            if (Keyboard.getEventKey() == 48 && this.gamemode.isSurvival()) {
                         	   ItemStack var10 = this.player.inventory.getSelected();
-           					   float var88 = 0.7F;
-        					   float var900 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
-        					   float var102 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
-        					   float var156 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
+           					      float var88 = 0.7F;
+        					         float var900 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
+        					         float var102 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
+        					         float var156 = this.level.random.nextFloat() * var88 + (1.0F - var88) * 0.5F;
                                if (var10.itemID == Block.LOG.id) {
                                   this.level.addEntity(new Item(this.level, (float)this.player.x + var900, (float)this.player.y + var102, (float)this.player.z + var156, new ItemStack(Block.WOOD.id)));
                                   this.level.addEntity(new Item(this.level, (float)this.player.x + var900, (float)this.player.y + var102, (float)this.player.z + var156, new ItemStack(Block.WOOD.id)));

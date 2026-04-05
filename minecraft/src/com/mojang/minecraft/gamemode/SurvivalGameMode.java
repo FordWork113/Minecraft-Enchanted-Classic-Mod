@@ -44,7 +44,7 @@ public final class SurvivalGameMode extends GameMode
 		if(hitDelay > 0)
 		{
 			hitDelay--;
-		} else if(x == hitX && y == hitY && z == hitZ && !this.minecraft.editMode) {
+		} else if(x == hitX && y == hitY && z == hitZ) {
 			int type = minecraft.level.getTile(x, y, z);
 
 			if(type != 0)
@@ -63,7 +63,7 @@ public final class SurvivalGameMode extends GameMode
 					float var10005 = (block.stepsound.getVolume() + 1.0F) / 8.0F;
 					float var10006 = block.stepsound.getPitch() * 0.5F;
 					
-					if(block.stepsound != Tile$SoundType.none) {
+					if(block.stepsound != Tile$SoundType.none && block.stepsound != Tile$SoundType.tnt) {
 						minecraft.level.playSound(var10004, (float)x + 0.5F, (float)y + 0.5F, (float)z + 0.5F, var10005, var10006);
 					    minecraft.level.playSound(var10007, (float)x + 0.5F, (float)y + 0.5F, (float)y + 0.5F, var10005, var10006);
 				    }
@@ -169,6 +169,7 @@ public final class SurvivalGameMode extends GameMode
 		player.inventory.Inventory[28] = new ItemStack(Block.DUNGEON_CHEST.id, 99);
 		player.inventory.Inventory[29] = new ItemStack(Block.CRISTAL.id, 99);
 		player.inventory.Inventory[30] = new ItemStack(Block.CRISTAL_BLOCK.id, 99);
+		player.inventory.Inventory[31] = new ItemStack(Block.WORKBENCH.id, 99);
 		}
 	}
 

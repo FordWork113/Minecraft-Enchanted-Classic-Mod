@@ -263,7 +263,8 @@ public class EntityMap implements Serializable {
                            float var24 = var22.xOld + (var22.x - var22.xOld);
                    		   float var25 = var22.yOld + (var22.y - var22.yOld);
                    		   float var26 = var22.zOld + (var22.z - var22.zOld);
-
+                   		   float var29 = var22.level.getBrightness((int)var24, (int)(var25), (int)var26);
+                   		   GL11.glColor3f(var29, var29, var29);
                            var22.renderItem(var22, var3, var24, var25, var26, var28, var4);
                            var22.render(var3, var4);
                            var22.setPlayerViewY(var4);

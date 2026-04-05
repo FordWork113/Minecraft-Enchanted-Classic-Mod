@@ -153,8 +153,10 @@ public class Item extends Entity {
    public void renderItem(Entity var1, TextureManager var2, float var3, float var4, float var5, float var6, float var7) {
 	      Item var8 = (Item)var1;
 	      ItemStack var9 = var8.item;
+	      float brightness = this.level.getBrightness((int)var3, (int)var4, (int)var5);
 	      GL11.glPushMatrix();
-	      float var10 = MathHelper.sin(((float)var8.age + var7) / 10.0F + var8.hoverStart) * 0.1F + 0.1F;
+	      GL11.glColor4f(brightness, brightness, brightness, 1.0F);
+	      float var10 = (brightness + MathHelper.sin(((float)var8.age + var7) / 10.0F + var8.hoverStart)) * 0.1F + 0.1F;
 	      //var7 = (((float)var8.age + var7) / 20.0F + var8.hoverStart) * (180.0F / (float)Math.PI);
 	      var7 = rot + ((float)tickCount + var7) * 3.0F;
 	      byte var11 = 1;
@@ -178,12 +180,18 @@ public class Item extends Entity {
 	      int var16;      
 	      if (var9.itemID < 256) {
 	         GL11.glEnable(2896);
-	         GL11.glPushMatrix();
+	         GL11.glPushMatrix();     
 	         GL11.glScalef(0.25F, 0.25F, 0.25F);
 	         GL11.glRotatef(var7, 0.0F, 1.0F, 0.0F);
 	         this.textureId = var2.load("/terrain.png");
 	         GL11.glBindTexture(3553, this.textureId);
 	         Block var13 = Block.blocks[var9.itemID];
+			 /*brightness = (brightness = (brightness = brightness * 0.5F + 0.5F) * brightness) * brightness;
+			 GL11.glColor4f(1.0F, 1.0F, 1.0F, brightness * 0.4F);
+			 GL11.glDisable(3553);
+			 GL11.glEnable(3042);
+			 GL11.glBlendFunc(770, 1);
+			 GL11.glDisable(3008);*/
 	         var13.renderFullbright(var12);
 
 	         for(var16 = 0; var16 < var11; ++var16) {
@@ -195,8 +203,13 @@ public class Item extends Entity {
 	            }
 	         }
 	         
+			 /*GL11.glEnable(3008);
+			 GL11.glDisable(3042);
+			 GL11.glBlendFunc(770, 771);
+			 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);*/
 	         GL11.glPopMatrix();
 	         GL11.glDisable(2896);
+	         //GL11.glEnable(3553);
 	      } else {
 	         GL11.glScalef(0.5F, 0.5F, 0.5F);
 	         this.textureId = var2.load("/items.png");
@@ -224,10 +237,9 @@ public class Item extends Entity {
 
    public void PlayerTouch(Entity var1) {
       Player var2 = (Player)var1;
-      if (var2.addResource(this.item)) {
-    	 //this.level.playSound("random.pop", var2.x, var2.y, var2.z, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
-         TakeEntityAnim var3 = new TakeEntityAnim(this.level, this, var2);
-         this.level.addEntity(var3);
+      if (this.delayBeforeCanPickup == 0 && var2.addResource(this.item)) {
+    	 //this.level.playSound("random.pop", var1.x, var1.y, var1.z, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+         this.level.addEntity(new TakeEntityAnim(this.level, this, var2));
          this.remove();
       }
 

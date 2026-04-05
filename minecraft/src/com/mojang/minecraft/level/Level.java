@@ -137,8 +137,8 @@ public class Level implements Serializable {
 	      this.height = var3;
 	      this.depth = var2;
 	      this.blocks = var4;
-		  this.blockers = new int[var1 * var3];
-		  Arrays.fill(this.blockers, this.depth);
+		   this.blockers = new int[var1 * var3];
+		   Arrays.fill(this.blockers, this.depth);
 		    
 	      if(this.levelType != 1) {
 	        this.calcLightDepths(0, 0, var1, var3);
@@ -148,14 +148,14 @@ public class Level implements Serializable {
 	         ((LevelRenderer)this.listeners.get(var1)).refresh();
 	      }
 
-          this.tickList.clear();
+         this.tickList.clear();
 	      this.findSpawn();
          
 	      this.initTransient();
 	      System.gc();
 	   }
 
-   public void findSpawn() {
+   /*public void findSpawn() {
 	      Random var1 = new Random();
 	      int var2 = 0;
 	      Level var6 = this;
@@ -197,7 +197,63 @@ public class Level implements Serializable {
 	      this.xSpawn = var3;
 	      this.ySpawn = var5;
 	      this.zSpawn = var4;
-   }
+   }*/
+
+   
+	public void findSpawn() {
+		Random var1 = new Random();
+		int var2 = 0;
+
+		label49:
+		while(true) {
+			int var3;
+			int var4;
+         int vardepth;
+			int var5;
+			do {
+				do {
+					++var2;
+					var3 = var1.nextInt(this.width / 2) + this.width / 4;
+					var4 = var1.nextInt(this.height / 2) + this.height / 4;
+					var5 = this.getHighestTile(var3, var4) + 1;
+					if(var2 == 10000) {
+						this.xSpawn = var3;
+						this.ySpawn = this.height + 100;
+						this.zSpawn = var4;
+						return;
+					}
+				} while(var5 < 4);
+			} while(var5 <= this.waterLevel);
+
+			for(int var6 = var3 - 5; var6 <= var3 + 5; ++var6) {
+				for(int var7 = var5; var7 <= var5 + 2; ++var7) {
+					for(int var8 = var4 - 5; var8 <= var4 + 5; ++var8) {
+                  Block var100;
+						if((var100 = Block.blocks[this.getTile(var6, var7, var8)]) != null && var100.getLiquidType() != LiquidType.NOT_LIQUID) {
+							continue label49;
+						}
+					}
+				}
+			}
+
+         if (var3 == 10000) {
+	         this.xSpawn = var3;
+	         this.ySpawn = -100;
+	         this.zSpawn = var4;
+	      }
+
+         if (var3 == 0 && var4 == 0 && var5 == 0) {
+		      this.xSpawn = var3;
+		      this.ySpawn = var5;
+		      this.zSpawn = var4;
+		  }
+
+			this.xSpawn = var3;
+			this.ySpawn = var5;
+			this.zSpawn = var4;
+			return;
+		}
+	}
 
    public void calcLightDepths(int var1, int var2, int var3, int var4) {
       for(int var5 = var1; var5 < var1 + var3; ++var5) {
@@ -619,7 +675,7 @@ public class Level implements Serializable {
 
    public int getHighestTile(int var1, int var2) {
       int var3;
-      for(var3 = this.height; (this.getTile(var1, var3 - 1, var2) == 0 || Block.blocks[this.getTile(var1, var3 - 1, var2)].getLiquidType() != LiquidType.NOT_LIQUID) && var3 > 0; --var3) {
+      for(var3 = this.depth; (this.getTile(var1, var3 - 1, var2) == 0 || Block.blocks[this.getTile(var1, var3 - 1, var2)].getLiquidType() != LiquidType.NOT_LIQUID) && var3 > 0; --var3) {
       }
 
       return var3;

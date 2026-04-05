@@ -11,7 +11,7 @@ public final class ItemStack implements Serializable {
 	public static final long serialVersionUID = 0L;
 	public int stackSize;
 	public int iconIndex;
-	public int animationsToGo;
+	public int popTime;
 	public int itemID;
 	public int itemDamage;
 

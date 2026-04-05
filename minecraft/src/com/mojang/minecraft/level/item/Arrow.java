@@ -1,313 +1,383 @@
 package com.mojang.minecraft.level.item;
 
 import com.mojang.minecraft.Entity;
+import com.mojang.minecraft.GameSettings;
 import com.mojang.minecraft.level.Level;
+import com.mojang.minecraft.net.PacketType;
 import com.mojang.minecraft.particle.BubbleParticle;
 import com.mojang.minecraft.phys.AABB;
 import com.mojang.minecraft.player.Player;
 import com.mojang.minecraft.render.ShapeRenderer;
 import com.mojang.minecraft.render.TextureManager;
 import com.mojang.util.MathHelper;
+
 import java.util.List;
+import java.util.Random;
 import org.lwjgl.opengl.GL11;
 
 public class Arrow extends Entity {
-	
-	public int arrowShake = 0;
-	
-	public Arrow(Level level1, Entity owner, float x, float y, float z, float unknown0, float unknown1, float unknown2)
-	{
-		super(level1);
-
-		this.owner = owner;
-
-		setSize(0.3F, 0.5F);
-
-		heightOffset = bbHeight / 2.0F;
-		damage = 3;
-
-		if(!(owner instanceof Player))
-		{
-			type = 1;
-		} else {
-			damage = 7;
-		}
-
-		heightOffset = 0.25F;
-
-		float unknown3 = MathHelper.cos(-unknown0 * 0.017453292F - 3.1415927F);
-		float unknown4 = MathHelper.sin(-unknown0 * 0.017453292F - 3.1415927F);
-
-		unknown0 = MathHelper.cos(-unknown1 * 0.017453292F);
-		unknown1 = MathHelper.sin(-unknown1 * 0.017453292F);
-
-		slide = false;
-
-		gravity = 1.0F / unknown2;
-
-		xo -= unknown3 * 0.2F;
-		zo += unknown4 * 0.2F;
-
-		x -= unknown3 * 0.2F;
-		z += unknown4 * 0.2F;
-
-		xd = unknown4 * unknown0 * unknown2;
-		yd = unknown1 * unknown2;
-		zd = unknown3 * unknown0 * unknown2;
-
-		setPos(x, y, z);
-
-		unknown3 = MathHelper.sqrt(xd * xd + zd * zd);
-
-		yRotO = yRot = (float)(Math.atan2((double)xd, (double)zd) * 180.0D / 3.1415927410125732D);
-		xRotO = xRot = (float)(Math.atan2((double)yd, (double)unknown3) * 180.0D / 3.1415927410125732D);
-
-		makeStepSound = false;
-	}
-
-	public void tick()
-	{
-		time++;
-
-		xRotO = xRot;
-		yRotO = yRot;
-
-		xo = x;
-		yo = y;
-		zo = z;
-		
-		if(this.arrowShake > 0) {
-			--this.arrowShake;
-		}
-		
-		if(hasHit)
-		{
-			
-			stickTime++;
-
-			if(type == 0)
-			{
-				if(stickTime >= 300 && Math.random() < 0.009999999776482582D)
-				{
-					remove();
-				}
-			} else if(type == 1 && stickTime >= 600) {
-				remove();
-			}
-		} else {
-			
-			xd *= 0.998F;
-			yd *= 0.998F;
-			zd *= 0.998F;
-
-			yd -= 0.02F * gravity;
-
-			int unknown0 = (int)(MathHelper.sqrt(xd * xd + yd * yd + zd * zd) / 0.2F + 1.0F);
-
-			float x0 = xd / (float)unknown0;
-			float y0 = yd / (float)unknown0;
-			float z0 = zd / (float)unknown0;
-
-			for(int unknown4 = 0; unknown4 < unknown0 && !collision; unknown4++)
-			{
-				
-				AABB unknown5 = bb.expand(x0, y0, z0);
-
-				if(level.getCubes(unknown5).size() > 0)
-				{
-					collision = true;
-				}
-
-				List blockMapEntitiesList = level.entityMap.getEntities(this, unknown5);
-
-				for(int currentEntity = 0; currentEntity < blockMapEntitiesList.size(); currentEntity++)
-				{
-					Entity entity = (Entity)blockMapEntitiesList.get(currentEntity);
-
-					if((entity).isShootable() && (entity != owner || time > 5))
-					{
-						
-						entity.hurt(this, damage);
-
-		          	    level.playSound("random.drr", x, y, z, 1.0F, 1.2F / (rand.nextFloat() * 0.2F + 0.9F));
-						
-						collision = true;
-
-						remove();
-
-						return;
-					}
-					
-				}
-
-				if(!collision)
-				{
-					
-					bb.move(x0, y0, z0);
-
-					x += x0;
-					y += y0;
-					z += z0;
-					
-					if(this.isUnderWater() && this.counter % 20.0F == 0.0F && this.level.rendererContext$5cd64a7f.settings.particles) {
-						this.level.particleEngine.spawnParticle(new BubbleParticle(this.level, this.x, this.y, this.z, this.xd, this.yd, this.zd));
-					}
-
-					entityMap.moved(this);
-				}
-			}
-
-			if(collision)
-			{
-				hasHit = true;
-				
-	            if (this.stickTime == 1) {
-	          	    this.level.playSound("random.drr", this.x, this.y, this.z, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));               
-	                this.arrowShake = 7;
-	            }
-
-				xd = yd = zd = 0.0F;
-
-			}
-
-			if(!hasHit)
-			{
-				float unknown6 = MathHelper.sqrt(xd * xd + zd * zd);
-
-				yRot = (float)(Math.atan2((double)xd, (double)zd) * 180.0D / 3.1415927410125732D);
-
-				for(xRot = (float)(Math.atan2((double)yd, (double)unknown6) * 180.0D / 3.1415927410125732D); xRot - xRotO < -180.0F; xRotO -= 360.0F) {}
-
-				while(xRot - xRotO >= 180.0F)
-				{
-					xRotO += 360.0F;
-				}
-
-				while(yRot - yRotO < -180.0F)
-				{
-					yRotO -= 360.0F;
-				}
-
-				while(yRot - yRotO >= 180.0F)
-				{
-					yRotO += 360.0F;
-				}
-			}
-		}
-
-	}
-
-	public void render(TextureManager textureManager, float unknown0)
-	{
-		textureId = textureManager.load("/item/arrows.png");
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-
-		float brightness = level.getBrightness((int)x, (int)y, (int)z);
-
-		GL11.glPushMatrix();
-		GL11.glColor4f(brightness, brightness, brightness, 1.0F);
-		GL11.glTranslatef(xo + (x - xo) * unknown0, this.yo + (this.y - this.yo) * unknown0 - this.heightOffset / 2.0F, this.zo + (this.z - this.zo) * unknown0);
-		GL11.glRotatef(yRotO + (yRot - yRotO) * unknown0 - 90.0F, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(xRotO + (xRot - xRotO) * unknown0, 0.0F, 0.0F, 1.0F);
-		GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
-
-		ShapeRenderer shapeRenderer = ShapeRenderer.instance;
-
-		unknown0 = 0.5F;
-
-		float unknown1 = (float)(0 + type * 10) / 32.0F;
-		float unknown2 = (float)(5 + type * 10) / 32.0F;
-		float unknown3 = 0.15625F;
-
-		float unknown4 = (float)(5 + type * 10) / 32.0F;
-		float unknown5 = (float)(10 + type * 10) / 32.0F;
-		float unknown6 = 0.05625F;
-
-		GL11.glScalef(0.05625F, unknown6, unknown6);
-
-		GL11.glNormal3f(unknown6, 0.0F, 0.0F);
-
-		shapeRenderer.begin();
-		shapeRenderer.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, unknown4);
-		shapeRenderer.vertexUV(-7.0F, -2.0F, 2.0F, unknown3, unknown4);
-		shapeRenderer.vertexUV(-7.0F, 2.0F, 2.0F, unknown3, unknown5);
-		shapeRenderer.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, unknown5);
-		shapeRenderer.end();
-
-		GL11.glNormal3f(-unknown6, 0.0F, 0.0F);
-
-		shapeRenderer.begin();
-		shapeRenderer.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, unknown4);
-		shapeRenderer.vertexUV(-7.0F, 2.0F, 2.0F, unknown3, unknown4);
-		shapeRenderer.vertexUV(-7.0F, -2.0F, 2.0F, unknown3, unknown5);
-		shapeRenderer.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, unknown5);
-		shapeRenderer.end();
-
-		for(int unknown7 = 0; unknown7 < 4; unknown7++)
-		{
-			GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-
-			GL11.glNormal3f(0.0F, -unknown6, 0.0F);
-
-			shapeRenderer.vertexUV(-8.0F, -2.0F, 0.0F, 0.0F, unknown1);
-			shapeRenderer.vertexUV(8.0F, -2.0F, 0.0F, unknown0, unknown1);
-			shapeRenderer.vertexUV(8.0F, 2.0F, 0.0F, unknown0, unknown2);
-			shapeRenderer.vertexUV(-8.0F, 2.0F, 0.0F, 0.0F, unknown2);
-			shapeRenderer.end();
-		}
-
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glPopMatrix();
-	}
-
-	public void playerTouch(Entity entity)
-	{
-		Player player = (Player)entity;
-
-		if(hasHit && owner == player && player.arrows < player.MAX_ARROWS)
-		{
-			TakeEntityAnim takeEntityAnim = new TakeEntityAnim(level, this, player);
-
-			level.addEntity(takeEntityAnim);
-
-			player.arrows++;
-
-			remove();
-		}
-	}
-
-	public void awardKillScore(Entity entity, int score)
-	{
-		owner.awardKillScore(entity, score);
-	}
-
-	public static final long serialVersionUID = 0L;
-
-	private float xd;
-	private float yd;
-	private float zd;
-
-	private float yRot;
-	private float xRot;
-	private float yRotO;
-	private float xRotO;
-
-	private boolean hasHit = false;
-
-	private int stickTime = 0;
-
-	private Entity owner;
-
-	private int time = 0;
-	private int type = 0;
-
-	private float gravity = 0.0F;
-
-	private int damage;
-
-	public Entity getOwner()
-	{
-		return owner;
-	}
+   public static final long serialVersionUID = 0L;
+   private float xd;
+   private float yd;
+   private float zd;
+   private float yRot;
+   private float xRot;
+   private float yRotO;
+   private float xRotO;
+   private boolean hasHit = false;
+   private int stickTime = 0;
+   private Entity owner;
+   private int time = 0;
+   private int type = 0;
+   private float gravity = 0.0F;
+   private int damage;
+   private Random random = new Random();
+   float xd1;
+   float yd1;
+   float zd1;
+   private float arrowShake = 0.0F;
+
+   public Arrow(Level var1, Entity var2, float var3, float var4, float var5, float var6, float var7, float var8) {
+      super(var1);
+      this.owner = var2;
+      this.setSize(0.3F, 0.5F);
+      this.heightOffset = this.bbHeight / 2.0F;
+      this.damage = 3;
+      if (!(var2 instanceof Player)) {
+         this.type = 1;
+      } else {
+         this.damage = 7;
+      }
+
+      this.heightOffset = 0.25F;
+      float var10 = MathHelper.cos(-var6 * 0.017453292F - 3.1415927F);
+      float var11 = MathHelper.sin(-var6 * 0.017453292F - 3.1415927F);
+      var6 = MathHelper.cos(-var7 * 0.017453292F);
+      var7 = MathHelper.sin(-var7 * 0.017453292F);
+      this.slide = false;
+      this.gravity = 1.0F / var8;
+      this.xo -= var10 * 0.2F;
+      this.zo += var11 * 0.2F;
+      var3 -= var10 * 0.2F;
+      var5 += var11 * 0.2F;
+      this.xd = var11 * var6 * var8;
+      this.yd = var7 * var8;
+      this.zd = var10 * var6 * var8;
+      this.setPos(var3, var4, var5);
+      var10 = MathHelper.sqrt(this.xd * this.xd + this.zd * this.zd);
+      this.yRotO = this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.1415927410125732D);
+      this.xRotO = this.xRot = (float)(Math.atan2((double)this.yd, (double)var10) * 180.0D / 3.1415927410125732D);
+      this.makeStepSound = false;
+   }
+
+   public Arrow(Level var1, Entity var2, int id, float var3, float var4, float var5, float var6, float var7, float var8) {
+      super(var1);
+      this.owner = var2;
+      this.setSize(0.3F, 0.5F);
+      this.heightOffset = this.bbHeight / 2.0F;
+      this.damage = 0;
+      this.heightOffset = 0.25F;
+      float var10 = MathHelper.cos(-var6 * 0.017453292F - 3.1415927F);
+      float var11 = MathHelper.sin(-var6 * 0.017453292F - 3.1415927F);
+      var6 = MathHelper.cos(-var7 * 0.017453292F);
+      var7 = MathHelper.sin(-var7 * 0.017453292F);
+      this.slide = false;
+      this.gravity = 1.0F / var8;
+      this.xo -= var10 * 0.2F;
+      this.zo += var11 * 0.2F;
+      var3 -= var10 * 0.2F;
+      var5 += var11 * 0.2F;
+      this.xd = var11 * var6 * var8;
+      this.yd = var7 * var8;
+      this.zd = var10 * var6 * var8;
+      this.setPos(var3, var4, var5);
+      var10 = MathHelper.sqrt(this.xd * this.xd + this.zd * this.zd);
+      this.yRotO = this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.1415927410125732D);
+      this.xRotO = this.xRot = (float)(Math.atan2((double)this.yd, (double)var10) * 180.0D / 3.1415927410125732D);
+      this.makeStepSound = false;
+   }
+
+   public Arrow(Level var1, int id, float var3, float var4, float var5, float var6, float var7, float var8, int type) {
+      super(var1);
+      this.setSize(0.3F, 0.5F);
+      this.heightOffset = this.bbHeight / 2.0F;
+      this.damage = 0;
+      this.type = type;
+      this.heightOffset = 0.25F;
+      float var10 = MathHelper.cos(-var6 * 0.017453292F - 3.1415927F);
+      float var11 = MathHelper.sin(-var6 * 0.017453292F - 3.1415927F);
+      var6 = MathHelper.cos(-var7 * 0.017453292F);
+      var7 = MathHelper.sin(-var7 * 0.017453292F);
+      this.slide = false;
+      this.gravity = 1.0F / var8;
+      this.xo -= var10 * 0.2F;
+      this.zo += var11 * 0.2F;
+      var3 -= var10 * 0.2F;
+      var5 += var11 * 0.2F;
+      this.xd = var11 * var6 * var8;
+      this.yd = var7 * var8;
+      this.zd = var10 * var6 * var8;
+      this.setPos(var3, var4, var5);
+      var10 = MathHelper.sqrt(this.xd * this.xd + this.zd * this.zd);
+      this.yRotO = this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.1415927410125732D);
+      this.xRotO = this.xRot = (float)(Math.atan2((double)this.yd, (double)var10) * 180.0D / 3.1415927410125732D);
+      this.makeStepSound = false;
+   }
+
+   public Arrow(Level var1) {
+      super(var1);
+      this.setSize(0.3F, 0.5F);
+      this.heightOffset = this.bbHeight;
+      this.heightOffset = 0.25F;
+      this.hasHit = true;
+   }
+
+   public void tick() {
+      ++this.time;
+      this.xRotO = this.xRot;
+      this.yRotO = this.yRot;
+      this.xo = this.x;
+      this.yo = this.y;
+      this.zo = this.z;
+      if (this.arrowShake > 0.0F) {
+         --this.arrowShake;
+         if (this.arrowShake < 0.0F) {
+            this.arrowShake = 0.0F;
+         }
+      }
+
+      int var1;
+      float var2;
+      float var3;
+      float var4;
+      int var5;
+      AABB var6;
+      float var9;
+      if (this.hasHit) {
+         if (this.type == 0) {
+            if (this.stickTime >= 300 && Math.random() < 0.009999999776482582D) {
+               if (!this.level.rendererContext$5cd64a7f.isOnline()) {
+                  this.remove();
+               }
+
+               return;
+            }
+         } else if (this.type == 1 && this.stickTime >= 600) {
+            this.remove();
+         }
+
+         var1 = (int)(MathHelper.sqrt(this.xd1 * this.xd1 + this.yd1 * this.yd1 + this.zd1 * this.zd1) / 0.2F + 1.0F);
+         var2 = this.xd1 / (float)var1;
+         var3 = this.yd1 / (float)var1;
+         var4 = this.zd1 / (float)var1;
+
+         for(var5 = 0; var5 < var1; ++var5) {
+            var6 = this.bb.expand(var2, var3, var4);
+            if (this.level.getCubes(var6).size() == 0) {
+               this.collision = false;
+            } else {
+               this.collision = true;
+            }
+         }
+
+         if (!this.collision) {
+            this.stickTime = 0;
+            this.yd1 -= 0.2F * this.gravity;
+            this.bb.move(var2, var3, var4);
+            this.x += var2;
+            this.y += var3;
+            this.z += var4;
+            this.entityMap.moved(this);
+            var9 = MathHelper.sqrt(this.xd1 * this.xd1 + this.zd1 * this.zd1);
+            this.yRot = (float)(Math.atan2((double)this.xd1, (double)this.zd1) * 180.0D / 3.1415927410125732D);
+
+            for(this.xRot = (float)(Math.atan2((double)this.yd1, (double)var9) * 180.0D / 3.1415927410125732D); this.xRot - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+            }
+
+            while(this.xRot - this.xRotO >= 180.0F) {
+               this.xRotO += 360.0F;
+            }
+
+            while(this.yRot - this.yRotO < -180.0F) {
+               this.yRotO -= 360.0F;
+            }
+
+            while(this.yRot - this.yRotO >= 180.0F) {
+               this.yRotO += 360.0F;
+            }
+
+            if (this.isUnderWater() && this.level.rendererContext$5cd64a7f.settings.particles) {
+               this.level.particleEngine.spawnParticle(new BubbleParticle(this.level, this.x, this.y, this.z, this.xd, this.yd, this.zd));
+            }
+         }
+
+         if (this.collision) {
+            ++this.stickTime;
+            if (this.stickTime == 1) {
+               this.level.playSound("random.drr", this, 1.0F, 1.0F + this.random.nextFloat() * 0.2F);
+               this.arrowShake = 7.0F;
+            }
+
+            this.xd = this.yd = this.zd = 0.0F;
+         }
+      } else {
+         this.xd *= 0.998F;
+         this.yd *= 0.998F;
+         this.zd *= 0.998F;
+         this.yd -= 0.02F * this.gravity;
+         if (this.isUnderWater() && this.level.rendererContext$5cd64a7f.settings.particles) {
+            this.level.particleEngine.spawnParticle(new BubbleParticle(this.level, this.x, this.y, this.z, this.xd, this.yd, this.zd));
+         }
+
+         var1 = (int)(MathHelper.sqrt(this.xd * this.xd + this.yd * this.yd + this.zd * this.zd) / 0.2F + 1.0F);
+         var2 = this.xd / (float)var1;
+         var3 = this.yd / (float)var1;
+         var4 = this.zd / (float)var1;
+         var5 = 0;
+
+         while(true) {
+            if (var5 >= var1 || this.collision) {
+               if (this.collision) {
+                  this.hasHit = true;
+                  this.xd1 = this.xd;
+                  this.yd1 = this.yd;
+                  this.zd1 = this.zd;
+                  this.xd = this.yd = this.zd = 0.0F;
+               }
+
+               if (!this.hasHit) {
+                  var9 = MathHelper.sqrt(this.xd * this.xd + this.zd * this.zd);
+                  this.yRot = (float)(Math.atan2((double)this.xd, (double)this.zd) * 180.0D / 3.1415927410125732D);
+
+                  for(this.xRot = (float)(Math.atan2((double)this.yd, (double)var9) * 180.0D / 3.1415927410125732D); this.xRot - this.xRotO < -180.0F; this.xRotO -= 360.0F) {
+                  }
+
+                  while(this.xRot - this.xRotO >= 180.0F) {
+                     this.xRotO += 360.0F;
+                  }
+
+                  while(this.yRot - this.yRotO < -180.0F) {
+                     this.yRotO -= 360.0F;
+                  }
+
+                  while(this.yRot - this.yRotO >= 180.0F) {
+                     this.yRotO += 360.0F;
+                  }
+               }
+               break;
+            }
+
+            var6 = this.bb.expand(var2, var3, var4);
+            if (this.level.getCubes(var6).size() > 0) {
+               this.collision = true;
+            }
+
+            List<?> var10 = this.level.entityMap.getEntities(this, var6);
+
+            for(int var7 = 0; var7 < var10.size(); ++var7) {
+               Entity var8;
+               if (this.level.rendererContext$5cd64a7f.networkManager == null) {
+                  if ((var8 = (Entity)var10.get(var7)).isShootable() && (var8 != this.owner || this.time > 5)) {
+                     var8.hurt(this, this.damage);
+                     this.collision = true;
+                     this.level.playSound("random.drr", this, 1.0F, 1.0F + this.random.nextFloat() * 0.2F);
+                     this.remove();
+                     return;
+                  }
+               } else if ((var8 = (Entity)var10.get(var7)).isShootable() && this.time > 2) {
+                  this.collision = true;
+                  this.level.playSound("random.drr", this, 1.0F, 1.0F + this.random.nextFloat() * 0.2F);
+                  this.remove();
+                  return;
+               }
+            }
+
+            if (!this.collision) {
+               this.bb.move(var2, var3, var4);
+               this.x += var2;
+               this.y += var3;
+               this.z += var4;
+               this.entityMap.moved(this);
+            }
+
+            ++var5;
+         }
+      }
+
+   }
+
+   public void render(TextureManager var1, float var2) {
+      this.textureId = var1.load("/item/arrows.png");
+      GL11.glBindTexture(3553, this.textureId);
+      float var10 = this.level.getBrightness((int)this.x, (int)this.y, (int)this.z);
+      GL11.glPushMatrix();
+      GL11.glColor4f(var10, var10, var10, 1.0F);
+
+      GL11.glTranslatef(this.xo + (this.x - this.xo) * var2, this.yo + (this.y - this.yo) * var2 - this.heightOffset / 2.0F, this.zo + (this.z - this.zo) * var2);
+      GL11.glRotatef(this.yRotO + (this.yRot - this.yRotO) * var2 - 90.0F, 0.0F, 1.0F, 0.0F);
+      GL11.glRotatef(this.xRotO + (this.xRot - this.xRotO) * var2, 0.0F, 0.0F, 1.0F);
+      float var21 = this.arrowShake - var2;
+      if (var21 > 0.0F) {
+         float var22 = -MathHelper.sin(var21 * 3.0F) * var21;
+         GL11.glRotatef(var22, 0.0F, 0.0F, 1.0F);
+      }
+
+      GL11.glRotatef(45.0F, 1.0F, 0.0F, 0.0F);
+      ShapeRenderer var11 = ShapeRenderer.instance;
+      var2 = 0.5F;
+      float var3 = (float)(0 + this.type * 10) / 32.0F;
+      float var4 = (float)(5 + this.type * 10) / 32.0F;
+      float var5 = 0.15625F;
+      float var6 = (float)(5 + this.type * 10) / 32.0F;
+      float var8 = (float)(10 + this.type * 10) / 32.0F;
+      float var7 = 0.05625F;
+      GL11.glScalef(0.05625F, var7, var7);
+      GL11.glNormal3f(var7, 0.0F, 0.0F);
+      var11.begin();
+      var11.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, var6);
+      var11.vertexUV(-7.0F, -2.0F, 2.0F, var5, var6);
+      var11.vertexUV(-7.0F, 2.0F, 2.0F, var5, var8);
+      var11.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, var8);
+      var11.end();
+      GL11.glNormal3f(-var7, 0.0F, 0.0F);
+      var11.begin();
+      var11.vertexUV(-7.0F, 2.0F, -2.0F, 0.0F, var6);
+      var11.vertexUV(-7.0F, 2.0F, 2.0F, var5, var6);
+      var11.vertexUV(-7.0F, -2.0F, 2.0F, var5, var8);
+      var11.vertexUV(-7.0F, -2.0F, -2.0F, 0.0F, var8);
+      var11.end();
+
+      for(int var9 = 0; var9 < 4; ++var9) {
+         GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+         GL11.glNormal3f(0.0F, -var7, 0.0F);
+         var11.vertexUV(-8.0F, -2.0F, 0.0F, 0.0F, var3);
+         var11.vertexUV(8.0F, -2.0F, 0.0F, var2, var3);
+         var11.vertexUV(8.0F, 2.0F, 0.0F, var2, var4);
+         var11.vertexUV(-8.0F, 2.0F, 0.0F, 0.0F, var4);
+         var11.end();
+      }
+
+      GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+      GL11.glPopMatrix();
+   }
+
+   public void awardKillScore(Entity var1, int var2) {
+      this.owner.awardKillScore(var1, var2);
+   }
+
+   public Entity getOwner() {
+      return this.owner;
+   }
+
+   public void playerTouch(Entity var1) {
+      Player var2 = (Player)var1;
+      if (this.hasHit && this.type == 0 && var2.arrows < this.level.rendererContext$5cd64a7f.player.MAX_ARROWS) {
+    	 //this.level.playSound("random.pop", var1.x, var1.y, var1.z, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+         this.level.addEntity(new TakeEntityAnim(this.level, this, var2));
+         ++var2.arrows;
+
+         this.remove();
+      }
+
+   }
 }

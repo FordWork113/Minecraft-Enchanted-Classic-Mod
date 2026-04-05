@@ -26,7 +26,7 @@ public class Slime extends Mob {
       this.deathScore = 65;
       var5.jumping = true;
       this.size = 1 << this.random.nextInt(3);
-      this.setSize(this.size);
+      this.setSlimeSize(this.size);
    }
 
    public void tick() {
@@ -53,7 +53,7 @@ public class Slime extends Mob {
 	  return null;
    }
    
-	public void setSize(int var1) {
+	public void setSlimeSize(int var1) {
 		this.size = var1;
 		this.setSize(0.6F * (float)var1, 0.6F * (float)var1);
 		this.health = var1 * var1;

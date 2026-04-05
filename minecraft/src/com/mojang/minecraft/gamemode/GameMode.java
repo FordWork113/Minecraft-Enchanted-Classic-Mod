@@ -29,27 +29,25 @@ public class GameMode
 	{
 	}
 
-	public void hitBlock(int x, int y, int z)
-	{
-		this.breakBlock(x, y, z);
+	public void hitBlock(int x, int y, int z) {
+		if(!this.minecraft.editMode) {
+		   this.breakBlock(x, y, z);
+		}
 	}
 
-	public void breakBlock(int x, int y, int z)
-	{
+	public void breakBlock(int x, int y, int z) {
 		Level level = minecraft.level;
 		Block block = Block.blocks[level.getTile(x, y, z)];
 
 		boolean success = level.netSetTile(x, y, z, 0);
 
-		if(block != null && success)
-		{
+		if(block != null && success) {
 			if(minecraft.isOnline())
 			{
 				minecraft.networkManager.sendBlockChange(x, y, z, 0, 1);
 			}
 
-			if(block.stepsound != Tile$SoundType.none)
-			{
+			if(block.stepsound != Tile$SoundType.none && (this.isCreative() || block.stepsound != Tile$SoundType.tnt)) {
 				level.playSound("step." + block.stepsound.name, (float)x, (float)y, (float)z, (block.stepsound.getVolume() + 1.0F) / 2.0F, block.stepsound.getPitch() * 0.8F);
 				level.playSound("random." + block.stepsound.name, (float)x, (float)y, (float)z, (block.stepsound.getVolume() + 1.0F) / 2.0F, block.stepsound.getPitch() * 0.8F);
 			}

@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 
 public final class InventoryScreen extends GuiScreen {
 
+	private static ItemGuiRenderer itemRenderer = new ItemGuiRenderer();
 	private ItemStack selectedItem = null;
 	protected List inventorySlots = new ArrayList();
 	protected Inventory inventory;

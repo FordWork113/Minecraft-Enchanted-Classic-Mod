@@ -23,6 +23,7 @@ import org.lwjgl.opengl.GL11;
 
 public final class HUDScreen extends Screen {
 
+   private static ItemGuiRenderer itemRenderer = new ItemGuiRenderer();
    public List chat = new ArrayList();
    private Random random = new Random();
    private Minecraft mc;
@@ -149,69 +150,34 @@ public final class HUDScreen extends Screen {
 	GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
 	ItemGuiRenderer.enableStandardItemLighting();
 	GL11.glPopMatrix();
-	int var20;
-	
+
 	for(var12 = 0; var12 < 9; ++var12) {
 		var26 = widt / 2 - 90 + var12 * 20 + 2;
 		var14 = heig - 16 - 3;
 		ItemStack var13 = this.mc.player.inventory.Inventory[var12];
-		if(var13 == null) {
-			if(var12 > 45) {
-				GL11.glDisable(GL11.GL_LIGHTING);
-				var15 = var6.load("/items.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
-				this.drawImage(var26, var14, 240, 63 - var12 << 4, 16, 16);
-				GL11.glEnable(GL11.GL_LIGHTING);
-			}
-		} else {
-			String var38 = null;
-			var20 = var13.itemID;
-			if(var13.itemID < 256) {
-				GL11.glDisable(GL11.GL_LIGHTING);
-				var15 = var6.load("/terrain.png");
-				GL11.glBindTexture(3553, var15);
-				Block var37 = Block.blocks[var20];
+		if(var13 != null) {
+			float var16 = (float)var13.popTime - var1;
+			if(var16 > 0.0F) {
 				GL11.glPushMatrix();
-				GL11.glTranslatef((float)(var26 - 2), (float)(var14 + 3), -50.0F);
-				
-				/*if((float)var8.Inventory[var12].animationsToGo > 0) {
-		            float var18;
-		            float var21 = -MathHelper.sin((var18 = ((float)var8.Inventory[var12].animationsToGo - var1) / 5.0F) * var18 * 3.1415927F) * 8.0F;
-		            float var19 = MathHelper.sin(var18 * var18 * 3.1415927F) + 1.0F;
-		            float var16 = MathHelper.sin(var18 * 3.1415927F) + 1.0F;
-		            GL11.glTranslatef(10.0F, var21 + 10.0F, 0.0F);
-		            GL11.glScalef(var19, var16, 1.0F);
-		            GL11.glTranslatef(-10.0F, -10.0F, 0.0F);
-		        }*/
-				
-	            GL11.glScalef(10.0F, 10.0F, 10.0F);
-	            GL11.glTranslatef(1.0F, 0.5F, 0.0F);
-	            GL11.glRotatef(-30.0F, 1.0F, 0.0F, 0.0F);
-	            GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-	            GL11.glTranslatef(-1.5F, 0.5F, 0.5F);
-	            GL11.glScalef(-1.0F, -1.0F, -1.0F);
-			    var7.begin();
-		        var37.renderFullbright(var7);
-		        var7.end();
-				GL11.glPopMatrix();
-				GL11.glEnable(GL11.GL_LIGHTING);
-			} else if(var13.getItem().getIconIndex() >= 0) {
-				GL11.glDisable(GL11.GL_LIGHTING);
-				var15 = this.mc.textureManager.load("/items.png");
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, var15);
-				this.drawImage(var26, var14, var13.getItem().getIconIndex() % 16 << 4, var13.getItem().getIconIndex() / 16 << 4, 16, 16);
-				GL11.glEnable(GL11.GL_LIGHTING);				
+				float var17 = 1.0F + var16 / 5.0F;
+				GL11.glTranslatef((float)(var26 + 8), (float)(var14 + 12), 0.0F);
+				GL11.glScalef(1.0F / var17, (var17 + 1.0F) / 2.0F, 1.0F);
+				GL11.glTranslatef((float)(-(var26 + 8)), (float)(-(var14 + 12)), 0.0F);
 			}
-			
+
+			itemRenderer.renderItemGUI(this.mc.fontRenderer, this.mc.textureManager, var13, var26, var14);
+			if(var16 > 0.0F) {
+				GL11.glPopMatrix();
+			}
+
 			if(var13.stackSize > 1) {
-				var38 = "" + var13.stackSize;
+				String var18 = "" + var13.stackSize;
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
-				var5.render(var38, var26 + 19 - 2 - var5.getWidth(var38), var14 + 6 + 3, 16777215);
+				var5.render(var18, var26 + 19 - 2 - var5.getWidth(var18), var14 + 6 + 3, 16777215);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
-			
 		}
 	  }
 

@@ -227,7 +227,7 @@ public class Block
 		this.tickDelay[id] = tickDelay;
 	}
 
-	public void renderFullbright(ShapeRenderer shapeRenderer)
+	public void renderFullbright(ShapeRenderer shapeRenderer) 
 	{
 		float red = 0.5F;
 		float green = 0.8F;
@@ -887,7 +887,7 @@ public class Block
 		var1 = var10000;
 		var10000.explodes = false;
 		BRICK = var1;
-		TNT = (new TNTBlock(46, 8)).setData(Tile$SoundType.none, 1.0F, 1.0F, 0.0F);
+		TNT = (new TNTBlock(46, 8)).setData(Tile$SoundType.tnt, 1.0F, 1.0F, 0.0F);
 		BOOKSHELF = (new BookshelfBlock(47, 35)).setData(Tile$SoundType.wood, 1.0F, 1.0F, 1.5F);
 		var10000 = (new Block(48, 36)).setData(Tile$SoundType.stone, 1.0F, 1.0F, 1.0F);
 		var0 = false;
@@ -1010,7 +1010,7 @@ public class Block
 		DUNGEON_CHEST = new DungeonChestBlock(106, 130).setData(Tile$SoundType.wood, 1.0F, 1.0F, 3.0F);
 		//TORCH = (new TorchBlock(%, 80)).setData(Tile$SoundType.wood, 0.7F, 1.0F, 0.0F);
 		//DOOR = (new DoorBlock(%, 112)).setData(Tile$SoundType.wood, 1.0F, 1.0F, 2.0F);
-		WORKBENCH = new WorkbenchBlock(107, 122).setData(Tile$SoundType.wood, 1.0F, 1.0F, 0.8F);
+		WORKBENCH = new WorkbenchBlock(107).setData(Tile$SoundType.wood, 1.0F, 1.0F, 0.8F);
 		CRISTAL = new CristalBlock(108, 105).setData(Tile$SoundType.metal, 1.0F, 1.0F, 0.1F);
 		CRISTAL_BLOCK = new Block(109, 113).setData(Tile$SoundType.metal, 1.0F, 1.0F, 2.0F);
 

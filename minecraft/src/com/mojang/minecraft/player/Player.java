@@ -73,12 +73,12 @@ public class Player extends Mob {
       this.oBob = this.bob;
       this.input.updateMovement();
 	  Inventory var6 = this.inventory;
-
-		for(int var7 = 0; var7 < var6.Inventory.length; ++var7) {
-			if(var6.Inventory[var7] != null && var6.Inventory[var7].animationsToGo > 0) {
-				--var6.Inventory[var7].animationsToGo;
-			}
+		
+	  for(int var7 = 0; var7 < var6.Inventory.length; ++var7) {
+		if(var6.Inventory[var7] != null && var6.Inventory[var7].popTime > 0) {
+			--var6.Inventory[var7].popTime;
 		}
+	  }
 		
       super.aiStep();
       float var1 = MathHelper.sqrt(this.xd * this.xd + this.zd * this.zd);
@@ -184,8 +184,9 @@ public class Player extends Mob {
    }
 
    public void hurt(Entity var1, int var2) {
+      if(!this.level.rendererContext$5cd64a7f.gamemode.isCreative()) {
          super.hurt(var1, var2);
-
+      }
    }
    
    public boolean isCreativeModeAllowed() {

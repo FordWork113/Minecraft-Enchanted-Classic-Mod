@@ -13,11 +13,12 @@ public enum Tile$SoundType {
    wood("wood", 6, "wood", 1.0F, 1.0F),
    snow("snow", 7, "snow", 1.0F, 1.0F),
    glass("glass", 7, "glass", 1.0F, 1.0F),
-   sand("sand", 8, "sand", 1.0F, 1.0F);
+   sand("sand", 8, "sand", 1.0F, 1.0F),
+   tnt("tnt", 9, "grass", 0.6F, 1.0F);
    public final String name;
    public final float volume;
    public final float pitch;
-   private static final Tile$SoundType[] values = new Tile$SoundType[]{none, grass, cloth, gravel, stone, metal, wood, snow, glass, sand};
+   private static final Tile$SoundType[] values = new Tile$SoundType[]{none, grass, cloth, gravel, stone, metal, wood, snow, glass, sand, tnt};
 
 
    private Tile$SoundType(String var1, int var2, String var3, float var4, float var5) {

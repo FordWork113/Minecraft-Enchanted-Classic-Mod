@@ -20,14 +20,10 @@ public final class PauseScreen extends GuiScreen {
       this.buttons.add(new Button(0, this.width / 2 - 100, this.height / 4, "Back to game"));
       this.buttons.add(new Button(1, this.width / 2 - 100, this.height / 4 + 24, "Generate new level..."));
       this.buttons.add(new Button(2, this.width / 2 - 92 - 8, this.height / 4 + 48, 98, 12, "Save level.."));
-  	  this.buttons.add(new Button(3, this.width / 2 - -10 - 8, this.height / 4 + 48, 98, 12, "Load level.."));
+  	   this.buttons.add(new Button(3, this.width / 2 - -10 - 8, this.height / 4 + 48, 98, 12, "Load level.."));
       this.buttons.add(new Button(4, this.width / 2 - 100, this.height / 4 + 86, "Options..."));
       this.buttons.add(new Button(5, this.width / 2 - 100, this.height / 4 + 110, "Quit to title menu.."));
-	  
-      if(this.minecraft.level.gamemode == 2) {
-    	  ((Button)this.buttons.get(2)).active = false;    	  
-      }
-      
+
       if (this.minecraft.session == null) {
          ((Button)this.buttons.get(2)).active = false;
          ((Button)this.buttons.get(3)).active = false;
@@ -66,13 +62,10 @@ public final class PauseScreen extends GuiScreen {
           this.minecraft.setCurrentScreen(new OptionsScreen(this, this.minecraft.settings));
       }
 
-      if (var1.id == 5 && this.minecraft.level.gamemode != 2 && this.minecraft.networkManager == null) {
+      if (var1.id == 5 && this.minecraft.networkManager == null) {
           this.minecraft.setCurrentScreen(new SaveLevelDialog(this));
       } else if(var1.id == 5 && this.minecraft.networkManager != null) {
           this.minecraft.setCurrentScreen(new DisconnectScreen(this.parent));
-      } else if (var1.id == 5 && this.minecraft.level.gamemode == 2) {
-          this.minecraft.level = null;
-          this.minecraft.setCurrentScreen(new TitleScreen());
       }
 
    }

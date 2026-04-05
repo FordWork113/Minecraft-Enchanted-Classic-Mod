@@ -130,7 +130,7 @@ public class Inventory implements Serializable {
 				} else {
 					var4 -= var3;
 					this.Inventory[var9].stackSize += var3;
-					this.Inventory[var9].animationsToGo = 5;
+					this.Inventory[var9].popTime = 5;
 					var10001 = var4;
 				}
 			}
@@ -142,7 +142,7 @@ public class Inventory implements Serializable {
 				int var2 = this.storeItemStack();
 				if(var2 >= 0) {
 					this.Inventory[var2] = var1;
-					this.Inventory[var2].animationsToGo = 5;
+					this.Inventory[var2].popTime = 5;
 					return true;
 				} else {
 					return false;
@@ -152,8 +152,8 @@ public class Inventory implements Serializable {
 		
 		   public void tick() {
 			      for(int var1 = 0; var1 < this.Inventory.length; ++var1) {
-			          if(this.Inventory[var1].animationsToGo  > 0) {
-			             --this.Inventory[var1].animationsToGo;
+			          if(this.Inventory[var1].popTime  > 0) {
+			             --this.Inventory[var1].popTime;
 			          }
 			       }
 

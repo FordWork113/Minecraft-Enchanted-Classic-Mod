@@ -2,13 +2,13 @@ package com.mojang.minecraft.level.tile;
 
 public class WorkbenchBlock extends Block {
 	
-	protected WorkbenchBlock(int var1, int var2) {
-		super(var1, var2);
-		this.textureId = var2;
+	protected WorkbenchBlock(int var1) {
+		super(var1);
+		this.textureId = 122;
 	}
 	
 	protected final int getTextureId(int texture) {
-		return texture == 1 ? this.textureId - 1 : (texture == 0 ? this.textureId - 1 : (texture == 3 ? this.textureId + 1 : this.textureId));
+		return texture == 1 ? this.textureId - 1 : (texture == 0 ? Block.WOOD.getTextureId(0): (texture == 3 ? this.textureId + 1 : this.textureId));
 	}
 
 	public final int getDropCount() {
